@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/style.css">
+<body>
+
+
+<nav class="navbar navbar-default" role="navigation">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">Marvelous Graphs</a>
+		</div>
+
+		<form class="navbar-form navbar-left" role="search" onSubmit="return false">
+		<div class="form-group">
+		
+		<input class="form-control" type="text" id="search_field" placeholder="Team or Character"/>
+		<select id="graph_type" class="form-control">
+			<option>--- Select Graph Type ---</option>
+			<option value="1">Dendogram</option>
+			<option value="2">Cicle Packing</option>
+			<option value="3">Node Link Tree</option>
+		</select>
+		<button type="submit" class="btn btn-default" id="search_button">Search</button>
+		  
+		<span style="font-size: 12px;">
+		&nbsp;&nbsp;&nbsp;&nbsp;(example inputs: x-men, avengers, etc)  Click on nodes to drill down - [<a href='http://www.marvel.com'>Data provided by Marvel. © 2014 Marvel</a>]
+		</span>
+		</div>
+		</form>
+		
+		<div>
+		</div>
+		
+	</div>
+</nav>
+
+
+
+<div id="info" style="width: 500px; font-size: 12px; margin-left: 20px;">
+ 	<div id="image" style="float: left; margin-right: 10px;" class="thumbnail"></div>
+	<span id="description"></span>
+</div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="js/dendo.js"></script>
+<script src="js/circlepack.js"></script>
+<script src="js/linktree.js"></script>
+<script>
+
+//On document load do some awesome stuff.
+$(document).ready(function(){
+	$("#loading").hide();
+});
+
+
+/***
+ * Search Button event handler.
+ * Will load teh graph based on a specific search term and graph type.
+ **/
+$("#search_button").on("click", function(){
+	
+		$("#loading").show();
+		
+		$("svg").remove();
+		var searchTerm = $("#search_field").val();
+		var graphType  = $("#graph_type").val()
+		
+		loadGraph(graphType, searchTerm);
+
+});
+
+/***
+ * Create the Nodes in the graph.
+ **/
+$("body").delegate(".node", "click", function(){
+	
+	
+	$("#loading").show();
+	
+	//drill down.
+	$("svg").remove();
+
+	var url = $(this).attr("resource_uri");
+	var searchTerm = $(this).attr("search_term");
+	var graphType  = $("#graph_type").val()
+
+	loadGraph(graphType, searchTerm, url);
+	
+});
+
+/***
+ * Actually load the specific graph selected by the user.
+ **/
+function loadGraph(graphType, searchTerm, url){
+
+	
+	if(graphType == "1"){
+		loadDendo(searchTerm, url);
+	}
+	else if(graphType == "2"){
+		loadCirclePacking(searchTerm, url);
+	}
+	else if(graphType == "3"){
+		loadNodeLinkTree(searchTerm, url);
+	}
+	
+}
+</script>
+<br><br>
+<div id="loading" style="background-color: #eee; width: 300px; height: 75px; margin: 0 auto; text-align:center">
+	<br>Please wait while we load data...
+	<img src="images/ajax-loader.gif">
+	<br>
+</div>
+</body>
